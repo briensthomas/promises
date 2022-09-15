@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const path = require('path');
+const SimpleDb = require('../lib/simple-db.js');
 
 const { CI, HOME } = process.env;
 const BASE_DIR = CI ? HOME : __dirname;
@@ -12,8 +13,20 @@ describe('simple database', () => {
     await fs.mkdir(TEST_DIR, { recursive: true });
   });
 
-  it('needs a first test...', async () => {
+  it('copy a file?', async () => {    
+    const srcPath = path.join(TEST_DIR, 'file.txt');
+    const destPath = path.join(TEST_DIR, 'copy.txt');
 
+    const db = new SimpleDb(TEST_DIR);
+    
+    db.save('file.txt', srcPath);
+
+    fs.writeFile(srcPath, 'copy me');
+
+    db.get(srcPath);
+
+    const res = await fs.readFile(destPath, 'utf-8');
+    expect(res).toEqual('copy me');
   });
 
 });
