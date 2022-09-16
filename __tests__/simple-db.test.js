@@ -14,19 +14,18 @@ describe('simple database', () => {
   });
 
   it('copy a file?', async () => {    
-    const srcPath = path.join(TEST_DIR, 'file.txt');
-    const destPath = path.join(TEST_DIR, 'copy.txt');
-
-    const db = new SimpleDb(TEST_DIR);
+    const rando = {
+      name: 'Kashi',
+      food: 'Burritos'
+    };
     
-    db.save('file.txt', srcPath);
+    const db = new SimpleDb(TEST_DIR);
 
-    fs.writeFile(srcPath, 'copy me');
+    await db.save(rando);
 
-    db.get(srcPath);
+    const result = await db.get(rando.id);
 
-    const res = await fs.readFile(destPath, 'utf-8');
-    expect(res).toEqual('copy me');
+    expect(result).toEqual(rando);
   });
 
 });
