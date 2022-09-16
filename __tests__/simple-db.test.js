@@ -7,6 +7,9 @@ const { CI, HOME } = process.env;
 const BASE_DIR = CI ? HOME : __dirname;
 const TEST_DIR = path.join(BASE_DIR, 'test-dir');
 
+const db = new SimpleDb(TEST_DIR);
+const id = crypto.randomBytes(8).toString('hex');
+
 describe('simple database', () => {
 
   beforeEach(async () => {
@@ -33,11 +36,39 @@ describe('simple database', () => {
     const dinner = {
       name: 'burrito',
     };
-    const id = crypto.randomBytes(8).toString('hex');
+
     await fs.writeFile(`${TEST_DIR}/${id}.json`, JSON.stringify(dinner));
-    const db = new SimpleDb(TEST_DIR);
+
     const result = await db.get(id);
     expect(result).toEqual(dinner);
   });
 
+  it('gets all files/objects in the directory', async () => {
+    const burritos = [{
+      name: 'Eggs, Cheese, and Hash Browns Burrito w/ Hot Sauce'
+    },
+    {
+      name: 'Carne Asada, Cheese, and French Fries Burrito w/ Hot Sauce'
+    },
+    {
+      name: 'Chicken, Rice, Beans, Cheese, Lettuce, Guacamole Burrito w/ Hot Sauce '
+    }];
+
+    await db.save(burritos);
+    const res = await db.getAll(TEST_DIR);
+
+    expect(res).toEqual([{
+      name: 'Eggs, Cheese, and Hash Browns Burrito w/ Hot Sauce',
+      id: expect.any(String)
+    },
+    {
+      name: 'Carne Asada, Cheese, and French Fries Burrito w/ Hot Sauce',
+      id: expect.any(String)
+    },
+    {
+      name: 'Chicken, Rice, Beans, Cheese, Lettuce, Guacamole Burrito w/ Hot Sauce ',
+      id: expect.any(String)
+    }
+    ]);
+  });
 });
