@@ -17,7 +17,7 @@ describe('simple database', () => {
     await fs.mkdir(TEST_DIR, { recursive: true });
   });
 
-  it('copy a file?', async () => {    
+  it('save a burrito', async () => {    
     const rando = {
       name: 'Kashi',
       food: 'Burritos'
@@ -53,22 +53,17 @@ describe('simple database', () => {
     {
       name: 'Chicken, Rice, Beans, Cheese, Lettuce, Guacamole Burrito w/ Hot Sauce '
     }];
+    const burritoPromises = burritos.map((burrito) => {
+      return db.save(burrito);
+    });
+    return Promise.all(burritoPromises)
+      .then(savedBurritos => {
+        return db.getAll(TEST_DIR)
+          .then(retrievedBurritos => {
+            expect(savedBurritos).toEqual(expect.arrayContaining(retrievedBurritos));
+          });
+        
+      });
 
-    await db.save(burritos);
-    const res = await db.getAll(TEST_DIR);
-
-    expect(res).toEqual([{
-      name: 'Eggs, Cheese, and Hash Browns Burrito w/ Hot Sauce',
-      id: expect.any(String)
-    },
-    {
-      name: 'Carne Asada, Cheese, and French Fries Burrito w/ Hot Sauce',
-      id: expect.any(String)
-    },
-    {
-      name: 'Chicken, Rice, Beans, Cheese, Lettuce, Guacamole Burrito w/ Hot Sauce ',
-      id: expect.any(String)
-    }
-    ]);
   });
 });
